@@ -8,6 +8,7 @@
 
 #include <QString>
 #include <QThread>
+#include <QDebug>
 
 class MIDIMANAGE_EXPORT MidiManage : public QThread
 {
@@ -15,6 +16,10 @@ class MIDIMANAGE_EXPORT MidiManage : public QThread
 private:
     QMidiFile *midiFile;
     QMidiOut *midiOut;
+    double duration;
+
+private:
+    void updateFileDuration();
 
 public:
     MidiManage();
@@ -25,6 +30,7 @@ public:
 
     QString greetings();
     QMap<QString, QString> devices();
+    double getFileDuration(); /* получить длительность файла в секундах */
 
     // QThread interface
 protected:

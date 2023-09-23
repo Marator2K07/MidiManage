@@ -1,5 +1,11 @@
 #include "midimanage.h"
 
+void MidiManage::updateFileDuration()
+{
+    QList<QMidiEvent*> events = midiFile->events();
+    duration = midiFile->timeFromTick(events.last()->tick());
+}
+
 MidiManage::MidiManage()
 {
     midiFile = new QMidiFile();
@@ -10,6 +16,7 @@ MidiManage::MidiManage(QString fileName, QString outDeviceId)
 {
     midiFile = new QMidiFile();
     midiFile->load(fileName);
+    updateFileDuration();
     midiOut = new QMidiOut();
     midiOut->connect(outDeviceId);
 }
@@ -17,6 +24,7 @@ MidiManage::MidiManage(QString fileName, QString outDeviceId)
 void MidiManage::loadFile(QString fileName)
 {
     midiFile->load(fileName);
+    updateFileDuration();
 }
 
 bool MidiManage::connectOut(QString outDeviceId)
@@ -34,6 +42,11 @@ QMap<QString, QString> MidiManage::devices()
     return QMidiOut::devices();
 }
 
+double MidiManage::getFileDuration()
+{
+    return duration;
+}
+
 void MidiManage::run()
 {
     QElapsedTimer t;
@@ -42,10 +55,11 @@ void MidiManage::run()
     for (QMidiEvent* e : events) {
         if (e->type() != QMidiEvent::Meta) {
             qint64 event_time = midiFile->timeFromTick(e->tick()) * 1000;
+            qDebug() << event_time;
 
             qint32 waitTime = event_time - t.elapsed();
             if (waitTime > 0) {
-                msleep(waitTime);
+                msleep(waitTime);                
             }
             if (e->type() == QMidiEvent::SysEx) {
                 // TODO: sysex
