@@ -24,6 +24,7 @@ public:
     bool connectOut(QString outDeviceId);
 
     QString greetings();
+    QMap<QString, QString> devices();
 
     // QThread interface
 protected:

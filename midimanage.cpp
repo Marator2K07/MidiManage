@@ -27,6 +27,11 @@ QString MidiManage::greetings()
     return "You are using MidiManager's lab";
 }
 
+QMap<QString, QString> MidiManage::devices()
+{
+    return QMidiOut::devices();
+}
+
 void MidiManage::run()
 {
     QElapsedTimer t;
