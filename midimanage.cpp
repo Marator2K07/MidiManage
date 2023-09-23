@@ -10,6 +10,9 @@ MidiManage::MidiManage()
 {
     midiFile = new QMidiFile();
     midiOut = new QMidiOut();
+
+    currentPos = 0;
+    isPlaying = false;
 }
 
 MidiManage::MidiManage(QString fileName, QString outDeviceId)
@@ -17,8 +20,12 @@ MidiManage::MidiManage(QString fileName, QString outDeviceId)
     midiFile = new QMidiFile();
     midiFile->load(fileName);
     updateFileDuration();
+
     midiOut = new QMidiOut();
     midiOut->connect(outDeviceId);
+
+    currentPos = 0;
+    isPlaying = false;
 }
 
 void MidiManage::loadFile(QString fileName)
@@ -57,14 +64,22 @@ void MidiManage::run()
     QElapsedTimer t;
     t.start();
     QList<QMidiEvent*> events = midiFile->events();
-    for (QMidiEvent* e : events) {
+    // участок кода для учитывания возможной паузы
+    // чтобы задать сдвиг ожидания, и как следствие - корректная работа
+    // после продолжения воспроизведения после паузы
+    QMidiEvent *eB = events.at(currentPos);
+    qint64 timeShift = midiFile->timeFromTick(eB->tick()) * 1000;
+    // анализ звуковых сообщений и их проигрывание
+    for (int pos = currentPos; pos < events.length() && isPlaying; pos++) {
+        QMidiEvent *e = events.at(pos);
         if (e->type() != QMidiEvent::Meta) {
-            qint64 event_time = midiFile->timeFromTick(e->tick()) * 1000;
-            qDebug() << event_time;
+            currentPos = pos; // сохраняем текущую позицию
 
-            qint32 waitTime = event_time - t.elapsed();
+            qint64 event_time = midiFile->timeFromTick(e->tick()) * 1000;
+            qint32 waitTime = event_time - t.elapsed() - timeShift;
+
             if (waitTime > 0) {
-                msleep(waitTime);                
+                msleep(waitTime);
             }
             if (e->type() == QMidiEvent::SysEx) {
                 // TODO: sysex
@@ -72,6 +87,31 @@ void MidiManage::run()
                 qint32 message = e->message();
                 midiOut->sendMsg(message);
             }
+            // если поставили паузу или полностью прекратили проигрывать
+            if(!isPlaying) {
+                midiOut->stopAll();
+                return;
+            }
         }
     }
+    // если дошли до конца трэка, то тоже нужно принять меры
+    midiOut->stopAll();
+    currentPos = 0;
+}
+
+void MidiManage::play()
+{
+    isPlaying = true;
+    start();
+}
+
+void MidiManage::pause()
+{
+    isPlaying = false;
+}
+
+void MidiManage::stop()
+{
+    isPlaying = false;
+    currentPos = 0;
 }

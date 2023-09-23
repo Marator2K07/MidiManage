@@ -16,7 +16,9 @@ class MIDIMANAGE_EXPORT MidiManage : public QThread
 private:
     QMidiFile *midiFile;
     QMidiOut *midiOut;
-    double duration;
+    double duration; /* длительность трэка в секундах */
+    qint32 currentPos; /* текущая позиция в трэке */
+    bool isPlaying;
 
 private:
     void updateFileDuration();
@@ -36,6 +38,11 @@ public:
     // QThread interface
 protected:
     void run() override;
+
+public slots:
+    void play();
+    void pause(); /* временная остановка на текущей позиции, следующий старт с нее */
+    void stop(); /* полная остановка проигрывания, следующий старт будет сначала */
 };
 
 
