@@ -1,0 +1,12 @@
+#ifndef MIDIMANAGE_GLOBAL_H
+#define MIDIMANAGE_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(MIDIMANAGE_LIBRARY)
+#  define MIDIMANAGE_EXPORT Q_DECL_EXPORT
+#else
+#  define MIDIMANAGE_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // MIDIMANAGE_GLOBAL_H
