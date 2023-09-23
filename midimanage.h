@@ -18,7 +18,7 @@ private:
 
 public:
     MidiManage();
-    MidiManage(QMidiFile *file, QMidiOut *out);
+    MidiManage(QString fileName, QString outDeviceId);
 
     void loadFile(QString fileName);
     bool connectOut(QString outDeviceId);

@@ -6,10 +6,12 @@ MidiManage::MidiManage()
     midiOut = new QMidiOut();
 }
 
-MidiManage::MidiManage(QMidiFile *file, QMidiOut *out)
+MidiManage::MidiManage(QString fileName, QString outDeviceId)
 {
-    midiFile = file;
-    midiOut = out;
+    midiFile = new QMidiFile();
+    midiFile->load(fileName);
+    midiOut = new QMidiOut();
+    midiOut->connect(outDeviceId);
 }
 
 void MidiManage::loadFile(QString fileName)
