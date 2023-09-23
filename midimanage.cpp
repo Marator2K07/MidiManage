@@ -32,9 +32,14 @@ bool MidiManage::connectOut(QString outDeviceId)
     return midiOut->connect(outDeviceId);
 }
 
+void MidiManage::disconnectOut()
+{
+    midiOut->disconnect();
+}
+
 QString MidiManage::greetings()
 {
-    return "You are using MidiManager's lab";
+    return "You are using MidiManage's lab";
 }
 
 QMap<QString, QString> MidiManage::devices()

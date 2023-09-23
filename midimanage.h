@@ -27,9 +27,10 @@ public:
 
     void loadFile(QString fileName);
     bool connectOut(QString outDeviceId);
+    void disconnectOut();
 
     QString greetings();
-    QMap<QString, QString> devices();
+    QMap<QString, QString> devices(); /* получить доступные девайсы вывода */
     double getFileDuration(); /* получить длительность файла в секундах */
 
     // QThread interface
