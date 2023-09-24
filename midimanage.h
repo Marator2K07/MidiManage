@@ -43,6 +43,10 @@ public slots:
     void play();
     void pause(); /* временная остановка на текущей позиции, следующий старт с нее */
     void stop(); /* полная остановка проигрывания, следующий старт будет сначала */
+
+    void playSound(int voice,
+                   int note,
+                   int velocity);
 };
 
 

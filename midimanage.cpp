@@ -122,3 +122,15 @@ void MidiManage::stop()
     isPlaying = false;
     currentPos = 0;
 }
+
+void MidiManage::playSound(int voice,
+                           int note,
+                           int velocity)
+{
+    QMidiEvent e;
+    e.setType(QMidiEvent::NoteOn);
+    e.setVoice(voice);
+    e.setNote(note);
+    e.setVelocity(velocity);
+    midiOut->sendEvent(e);
+}
