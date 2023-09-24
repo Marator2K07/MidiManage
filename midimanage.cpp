@@ -30,7 +30,10 @@ MidiManage::MidiManage(QString fileName, QString outDeviceId)
 
 void MidiManage::loadFile(QString fileName)
 {
-    midiFile->load(fileName);
+    isPlaying = false;
+    currentPos = 0;
+
+    midiFile->load(fileName);    
     updateFileDuration();
 }
 
@@ -103,8 +106,10 @@ void MidiManage::run()
 
 void MidiManage::play()
 {
-    isPlaying = true;
-    start();
+    if (midiFile->tracks().length() > 0) {
+        isPlaying = true;
+        start();
+    }
 }
 
 void MidiManage::pause()
