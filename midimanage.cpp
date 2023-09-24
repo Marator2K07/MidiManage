@@ -67,6 +67,11 @@ QMap<QString, QString> MidiManage::devices()
     return QMidiOut::devices();
 }
 
+QList<QMidiEvent *> MidiManage::events()
+{
+    return currentMidiFile->events();
+}
+
 double MidiManage::getFileDuration()
 {
     return duration;

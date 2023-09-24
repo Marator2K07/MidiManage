@@ -6,9 +6,7 @@
 #include <src/QMidiFile.h>
 #include <src/QMidiOut.h>
 
-#include <QString>
 #include <QThread>
-#include <QDebug>
 
 class MIDIMANAGE_EXPORT MidiManage : public QThread
 {
@@ -36,6 +34,7 @@ public:
 
     QString greetings();
     QMap<QString, QString> devices(); /* получить доступные девайсы вывода */
+    QList<QMidiEvent*> events(); /* получить список музыкальных событий текущего файла! */
     double getFileDuration(); /* получить длительность файла в секундах */
 
     void switchToLoadFile();
