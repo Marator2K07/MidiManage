@@ -15,14 +15,13 @@ class MIDIMANAGE_EXPORT MidiManage : public QThread
     Q_OBJECT
 private:
     QMidiFile *currentMidiFile;
-    QMidiFile *midiLoadFile;
-    QMidiFile *midiRecordFile; /* тестовое поле */
+    QMidiFile *loadMidiFile;
+    QMidiFile *recordMidiFile;
+
     QMidiOut *midiOut;
     double duration; /* длительность трэка в секундах */
     qint32 currentPos; /* текущая позиция в трэке */
     bool isPlaying;
-
-
 
 private:
     void updateFileDuration();
@@ -32,12 +31,15 @@ public:
     MidiManage(QString fileName, QString outDeviceId);
 
     void loadFile(QString fileName);
-    bool connectOut(QString outDeviceId);
-    void disconnectOut();
+    bool connectOutDevice(QString outDeviceId);
+    void disconnectOutDevice();
 
     QString greetings();
     QMap<QString, QString> devices(); /* получить доступные девайсы вывода */
     double getFileDuration(); /* получить длительность файла в секундах */
+
+    void switchToLoadFile();
+    void switchToRecordFile();
 
     // QThread interface
 protected:
@@ -52,9 +54,6 @@ public slots:
                          int note,
                          int velocity,
                          int tick);
-
-    void switchToLoadFile();
-    void switchToRecordFile();
 };
 
 

@@ -8,8 +8,10 @@ void MidiManage::updateFileDuration()
 
 MidiManage::MidiManage()
 {
-    midiLoadFile = new QMidiFile();
-    midiRecordFile = new QMidiFile(); // тестовая реализация
+    loadMidiFile = new QMidiFile();
+    recordMidiFile = new QMidiFile();
+    recordMidiFile->createTrack();
+
     midiOut = new QMidiOut();    
 
     currentPos = 0;
@@ -18,10 +20,12 @@ MidiManage::MidiManage()
 
 MidiManage::MidiManage(QString fileName, QString outDeviceId)
 {
-    midiLoadFile = new QMidiFile();
-    midiRecordFile = new QMidiFile(); // тестовая реализация
-    midiLoadFile->load(fileName);
-    currentMidiFile = midiLoadFile; // тестовая реализация
+    loadMidiFile = new QMidiFile();
+    recordMidiFile = new QMidiFile();
+    recordMidiFile->createTrack();
+
+    loadMidiFile->load(fileName);
+    currentMidiFile = loadMidiFile;
     updateFileDuration();    
 
     midiOut = new QMidiOut();
@@ -36,19 +40,21 @@ void MidiManage::loadFile(QString fileName)
     isPlaying = false;
     currentPos = 0;
 
-    midiLoadFile->load(fileName);
-    currentMidiFile = midiLoadFile; // тестовая реализация
+    loadMidiFile->load(fileName);
+    currentMidiFile = loadMidiFile;
     updateFileDuration();    
 }
 
-bool MidiManage::connectOut(QString outDeviceId)
+bool MidiManage::connectOutDevice(QString outDeviceId)
 {
     return midiOut->connect(outDeviceId);
 }
 
-void MidiManage::disconnectOut()
+void MidiManage::disconnectOutDevice()
 {
-    midiOut->disconnect();
+    if (midiOut->isConnected()) {
+        midiOut->disconnect();
+    }
 }
 
 QString MidiManage::greetings()
@@ -139,15 +145,15 @@ void MidiManage::playRecordSound(int voice,
     e->setVelocity(velocity);
     midiOut->sendEvent(*e);
 
-    midiRecordFile->addEvent(tick, e); // тестовая реализация
+    recordMidiFile->addEvent(tick, e);
 }
 
 void MidiManage::switchToLoadFile()
 {
-    currentMidiFile = midiLoadFile;
+    currentMidiFile = loadMidiFile;
 }
 
 void MidiManage::switchToRecordFile()
 {
-    currentMidiFile = midiRecordFile;
+    currentMidiFile = recordMidiFile;
 }
