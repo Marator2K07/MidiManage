@@ -52,6 +52,9 @@ public slots:
                          int note,
                          int velocity,
                          int tick);
+
+    void switchToLoadFile();
+    void switchToRecordFile();
 };
 
 

@@ -141,3 +141,13 @@ void MidiManage::playRecordSound(int voice,
 
     midiRecordFile->addEvent(tick, e); // тестовая реализация
 }
+
+void MidiManage::switchToLoadFile()
+{
+    currentMidiFile = midiLoadFile;
+}
+
+void MidiManage::switchToRecordFile()
+{
+    currentMidiFile = midiRecordFile;
+}
