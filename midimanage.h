@@ -14,11 +14,15 @@ class MIDIMANAGE_EXPORT MidiManage : public QThread
 {
     Q_OBJECT
 private:
-    QMidiFile *midiFile;
+    QMidiFile *currentMidiFile;
+    QMidiFile *midiLoadFile;
+    QMidiFile *midiRecordFile; /* тестовое поле */
     QMidiOut *midiOut;
     double duration; /* длительность трэка в секундах */
     qint32 currentPos; /* текущая позиция в трэке */
     bool isPlaying;
+
+
 
 private:
     void updateFileDuration();
@@ -44,9 +48,10 @@ public slots:
     void pause(); /* временная остановка на текущей позиции, следующий старт с нее */
     void stop(); /* полная остановка проигрывания, следующий старт будет сначала */
 
-    void playSound(int voice,
-                   int note,
-                   int velocity);
+    void playRecordSound(int voice,
+                         int note,
+                         int velocity,
+                         int tick);
 };
 
 

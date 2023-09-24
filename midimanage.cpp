@@ -2,14 +2,15 @@
 
 void MidiManage::updateFileDuration()
 {
-    QList<QMidiEvent*> events = midiFile->events();
-    duration = midiFile->timeFromTick(events.last()->tick());
+    QList<QMidiEvent*> events = currentMidiFile->events();
+    duration = currentMidiFile->timeFromTick(events.last()->tick());
 }
 
 MidiManage::MidiManage()
 {
-    midiFile = new QMidiFile();
-    midiOut = new QMidiOut();
+    midiLoadFile = new QMidiFile();
+    midiRecordFile = new QMidiFile(); // тестовая реализация
+    midiOut = new QMidiOut();    
 
     currentPos = 0;
     isPlaying = false;
@@ -17,9 +18,11 @@ MidiManage::MidiManage()
 
 MidiManage::MidiManage(QString fileName, QString outDeviceId)
 {
-    midiFile = new QMidiFile();
-    midiFile->load(fileName);
-    updateFileDuration();
+    midiLoadFile = new QMidiFile();
+    midiRecordFile = new QMidiFile(); // тестовая реализация
+    midiLoadFile->load(fileName);
+    currentMidiFile = midiLoadFile; // тестовая реализация
+    updateFileDuration();    
 
     midiOut = new QMidiOut();
     midiOut->connect(outDeviceId);
@@ -33,8 +36,9 @@ void MidiManage::loadFile(QString fileName)
     isPlaying = false;
     currentPos = 0;
 
-    midiFile->load(fileName);    
-    updateFileDuration();
+    midiLoadFile->load(fileName);
+    currentMidiFile = midiLoadFile; // тестовая реализация
+    updateFileDuration();    
 }
 
 bool MidiManage::connectOut(QString outDeviceId)
@@ -66,12 +70,12 @@ void MidiManage::run()
 {
     QElapsedTimer t;
     t.start();
-    QList<QMidiEvent*> events = midiFile->events();
+    QList<QMidiEvent*> events = currentMidiFile->events();
     // участок кода для учитывания возможной паузы
     // чтобы задать сдвиг ожидания, и как следствие - корректная работа
     // после продолжения воспроизведения после паузы
     QMidiEvent *eB = events.at(currentPos);
-    qint64 timeShift = midiFile->timeFromTick(eB->tick()) * 1000;
+    qint64 timeShift = currentMidiFile->timeFromTick(eB->tick()) * 1000;
 
     QMidiEvent *e = nullptr;
     // анализ звуковых сообщений и их проигрывание
@@ -80,7 +84,7 @@ void MidiManage::run()
         if (e->type() != QMidiEvent::Meta) {
             currentPos = pos; // сохраняем текущую позицию
 
-            qint64 event_time = midiFile->timeFromTick(e->tick()) * 1000;
+            qint64 event_time = currentMidiFile->timeFromTick(e->tick()) * 1000;
             qint32 waitTime = event_time - t.elapsed() - timeShift;
 
             if (waitTime > 0) {
@@ -106,7 +110,7 @@ void MidiManage::run()
 
 void MidiManage::play()
 {
-    if (midiFile->tracks().length() > 0) {
+    if (currentMidiFile->tracks().length() > 0) {
         isPlaying = true;
         start();
     }
@@ -123,14 +127,17 @@ void MidiManage::stop()
     currentPos = 0;
 }
 
-void MidiManage::playSound(int voice,
-                           int note,
-                           int velocity)
+void MidiManage::playRecordSound(int voice,
+                                 int note,
+                                 int velocity,
+                                 int tick)
 {
-    QMidiEvent e;
-    e.setType(QMidiEvent::NoteOn);
-    e.setVoice(voice);
-    e.setNote(note);
-    e.setVelocity(velocity);
-    midiOut->sendEvent(e);
+    QMidiEvent *e = new QMidiEvent();
+    e->setType(QMidiEvent::NoteOn);
+    e->setVoice(voice);
+    e->setNote(note);
+    e->setVelocity(velocity);
+    midiOut->sendEvent(*e);
+
+    midiRecordFile->addEvent(tick, e); // тестовая реализация
 }
