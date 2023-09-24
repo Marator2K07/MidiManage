@@ -69,9 +69,11 @@ void MidiManage::run()
     // после продолжения воспроизведения после паузы
     QMidiEvent *eB = events.at(currentPos);
     qint64 timeShift = midiFile->timeFromTick(eB->tick()) * 1000;
+
+    QMidiEvent *e = nullptr;
     // анализ звуковых сообщений и их проигрывание
     for (int pos = currentPos; pos < events.length() && isPlaying; pos++) {
-        QMidiEvent *e = events.at(pos);
+        *e = events.at(pos);
         if (e->type() != QMidiEvent::Meta) {
             currentPos = pos; // сохраняем текущую позицию
 
