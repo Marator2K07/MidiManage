@@ -73,7 +73,7 @@ void MidiManage::run()
     QMidiEvent *e = nullptr;
     // анализ звуковых сообщений и их проигрывание
     for (int pos = currentPos; pos < events.length() && isPlaying; pos++) {
-        *e = events.at(pos);
+        e = events.at(pos);
         if (e->type() != QMidiEvent::Meta) {
             currentPos = pos; // сохраняем текущую позицию
 
